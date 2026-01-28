@@ -1,17 +1,13 @@
 {
   "name": "penr-oz-vercel-agent-skill-poc-code-reviewer",
   "version": "0.1.0",
-  "description": "POC example React Code reviewer utilizing Vercel Agent skills",
+  "description": "POC React Code Reviewer utilizing Vercel Agent skills",
   "type": "module",
   "bin": {
-    "code-reviewer": "bin/cli.js"
+    "code-reviewer": "./bin/cli.js"
   },
   "scripts": {
-    "start": "node bin/cli.js review .",
-    "lint": "echo \"No linter configured yet\""
-  },
-  "dependencies": {
-    "commander": "^12.1.0"
+    "review": "node bin/cli.js review ."
   },
   "license": "MIT"
 }
