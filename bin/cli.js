@@ -1,26 +1,33 @@
 #!/usr/bin/env node
 
-// bin/cli.js
-//
-// Command-line interface for the React Code Reviewer POC.
-// Uses commander to parse arguments and delegates to src/index.js.
+/**
+ * CLI entry point
+ *
+ * Usage:
+ *   node bin/cli.js review <path>
+ *
+ * Demonstrates: CLI → Orchestrator → Skill → Result
+ */
 
-import { Command } from "commander";
-import { runReview } from "../src/index.js";
+import { runReview } from "../src/orchestrator.js";
 
-const program = new Command();
+const [command, targetPath] = process.argv.slice(2);
 
-program
-  .name("code-reviewer")
-  .description("POC React/Next.js code reviewer using Vercel Agent Skills")
-  .version("0.1.0");
+if (command !== "review" || !targetPath) {
+  console.error("Usage: node bin/cli.js review <path>");
+  process.exit(1);
+}
 
-program
-  .command("review <path>")
-  .description("Review React/Next.js code at the given path")
-  .action((path) => {
-    console.log(`Starting code review for: ${path}`);
-    runReview(path);
-  });
+console.log("=== Code Review Agent ===\n");
 
-program.parse();
+const { summary, findings } = runReview(targetPath);
+
+console.log("\n--- Summary ---");
+console.log(summary);
+
+console.log("\n--- Findings ---");
+for (const f of findings) {
+  console.log(`  [${f.severity}] ${f.file}:${f.line} — ${f.message}`);
+}
+
+console.log("\n=== Done ===");
