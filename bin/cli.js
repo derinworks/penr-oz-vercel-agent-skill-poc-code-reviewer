@@ -20,7 +20,13 @@ if (command !== "review" || !targetPath) {
 
 console.log("=== Code Review Agent ===\n");
 
-const { summary, findings } = runReview(targetPath);
+const { summary, findings, fileMetrics } = runReview(targetPath);
+
+console.log("\n--- Files Discovered ---");
+console.log(`  Total: ${fileMetrics.totalFiles} file(s)`);
+for (const filePath of fileMetrics.filePaths) {
+  console.log(`    ${filePath}`);
+}
 
 console.log("\n--- Summary ---");
 console.log(summary);

@@ -6,11 +6,13 @@
  */
 
 import { reviewRepository } from "../skills/react-code-review/review.js";
+import { scanFiles } from "./scanner.js";
 
 export function runReview(path, options = {}) {
   console.log(`[orchestrator] Dispatching review skill for path="${path}"`);
 
-  const result = reviewRepository({ path, options });
+  const files = scanFiles(path);
+  const result = reviewRepository({ path, files, options });
 
   console.log("[orchestrator] Skill returned successfully");
   return result;
