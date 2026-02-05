@@ -147,15 +147,21 @@ export function reviewRepository({ path, files = [], options = {} }) {
   const findings = [];
 
   for (const fullPath of files) {
+    const relPath = relative(path, fullPath);
     let content;
     try {
       content = readFileSync(fullPath, "utf-8");
-    } catch {
+    } catch (err) {
+      findings.push({
+        file: relPath,
+        rule: "unreadable-file",
+        severity: "warning",
+        message: `Unable to read file: ${err.message}`,
+      });
       continue;
     }
 
     const lines = content.split("\n");
-    const relPath = relative(path, fullPath);
     findings.push(...analyzeFile(relPath, lines));
   }
 
