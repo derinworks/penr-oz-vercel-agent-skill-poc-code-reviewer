@@ -12,7 +12,7 @@
  *   - multiple-components:  More than one React component per file
  */
 
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import { relative } from "node:path";
 import { scanFiles } from "../../src/scanner.js";
 
@@ -143,7 +143,16 @@ function analyzeFile(file, lines) {
  * Main skill entry point.
  */
 export function reviewRepository({ path, files, options = {} }) {
-  const resolvedFiles = files && files.length > 0 ? files : scanFiles(path);
+  let resolvedFiles;
+  if (files && files.length > 0) {
+    resolvedFiles = files;
+  } else {
+    try {
+      resolvedFiles = statSync(path).isFile() ? [path] : scanFiles(path);
+    } catch {
+      resolvedFiles = [];
+    }
+  }
   console.log(`[skill:react-code-review] Entering reviewRepository — path="${path}", files=${resolvedFiles.length}`);
 
   const findings = [];
