@@ -32,8 +32,12 @@ console.log("\n--- Summary ---");
 console.log(summary);
 
 console.log("\n--- Findings ---");
-for (const f of findings) {
-  console.log(`  [${f.severity}] ${f.file}:${f.line} — ${f.message}`);
+if (findings.length === 0) {
+  console.log("  No issues found.");
+} else {
+  for (const f of findings) {
+    console.log(`  [${f.severity}] ${f.file} (${f.rule}) — ${f.message}`);
+  }
 }
 
 console.log("\n=== Done ===");
