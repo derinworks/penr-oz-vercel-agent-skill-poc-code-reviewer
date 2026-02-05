@@ -14,6 +14,7 @@
 
 import { readFileSync } from "node:fs";
 import { relative } from "node:path";
+import { scanFiles } from "../../src/scanner.js";
 
 const MAX_LINE_COUNT = 300;
 
@@ -141,12 +142,13 @@ function analyzeFile(file, lines) {
 /**
  * Main skill entry point.
  */
-export function reviewRepository({ path, files = [], options = {} }) {
-  console.log(`[skill:react-code-review] Entering reviewRepository — path="${path}", files=${files.length}`);
+export function reviewRepository({ path, files, options = {} }) {
+  const resolvedFiles = files && files.length > 0 ? files : scanFiles(path);
+  console.log(`[skill:react-code-review] Entering reviewRepository — path="${path}", files=${resolvedFiles.length}`);
 
   const findings = [];
 
-  for (const fullPath of files) {
+  for (const fullPath of resolvedFiles) {
     const relPath = relative(path, fullPath);
     let content;
     try {
@@ -172,8 +174,8 @@ export function reviewRepository({ path, files = [], options = {} }) {
       : `${findings.length} finding(s) across ${fileSet.size} file(s)`;
 
   const fileMetrics = {
-    totalFiles: files.length,
-    filePaths: files,
+    totalFiles: resolvedFiles.length,
+    filePaths: resolvedFiles,
   };
 
   console.log(`[skill:react-code-review] Exiting reviewRepository — ${findings.length} finding(s), ${fileMetrics.totalFiles} file(s) discovered`);
