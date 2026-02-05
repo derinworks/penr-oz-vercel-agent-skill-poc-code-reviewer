@@ -13,7 +13,7 @@
  */
 
 import { readFileSync, statSync } from "node:fs";
-import { relative } from "node:path";
+import { dirname, relative } from "node:path";
 import { scanFiles } from "../../src/scanner.js";
 
 const MAX_LINE_COUNT = 300;
@@ -144,11 +144,14 @@ function analyzeFile(file, lines) {
  */
 export function reviewRepository({ path, files, options = {} }) {
   let resolvedFiles;
+  let baseDir = path;
   if (files && files.length > 0) {
     resolvedFiles = files;
   } else {
     try {
-      resolvedFiles = statSync(path).isFile() ? [path] : scanFiles(path);
+      const isFile = statSync(path).isFile();
+      resolvedFiles = isFile ? [path] : scanFiles(path);
+      if (isFile) baseDir = dirname(path);
     } catch {
       resolvedFiles = [];
     }
@@ -158,7 +161,7 @@ export function reviewRepository({ path, files, options = {} }) {
   const findings = [];
 
   for (const fullPath of resolvedFiles) {
-    const relPath = relative(path, fullPath);
+    const relPath = relative(baseDir, fullPath);
     let content;
     try {
       content = readFileSync(fullPath, "utf-8");
